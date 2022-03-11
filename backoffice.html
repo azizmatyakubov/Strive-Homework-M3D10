@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>BackOffice</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="./NetflixHome.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+
+
+    <div class="container d-flex justify-content-center">
+        <div class="input-wrapper w-50">
+
+            <h1 id="form-title" class="text-center mb-5">Enter new movie's details</h1>
+
+        <form id="form"  onsubmit="handleSubmit(event)">
+                <label for="movieName">Movie name</label>
+                <div class="input-group mb-3">
+                    <input id="movieName" type="text" class="form-control" placeholder="Type here..." aria-label="Username" aria-describedby="basic-addon1">
+                </div> 
+                <label for="movieDescription">Movie Description</label>
+                <div class="input-group mb-3">
+                    <input id="movieDescription" type="text" class="form-control" placeholder="Type here..." aria-label="Username" aria-describedby="basic-addon1">
+                </div>  
+                <label for="movieName">Movie Category</label>
+                <div class="input-group mb-3">
+                    <input id="movieCategory" type="text" class="form-control" placeholder="Type here..." aria-label="Username" aria-describedby="basic-addon1">
+                </div>  
+                <label for="movieImageUrl">Movie image url</label>
+                <div class="input-group mb-3">
+                    <input id="movieImageUrl" type="link" class="form-control" placeholder="Paste here.." aria-label="Username" aria-describedby="basic-addon1">
+                </div>   
+                <button id="submitBtn" type="submit" class="btn btn-primary">Add new movie</button>
+                <button id="deleteBtn" type="button" class="btn btn-warning d-none" onclick="handleDelete(event)">Delete movie</button>
+            </form> 
+            
+            <div class="spinner justify-content-center mt-5 mx-auto d-none">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+           
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        //End Point
+        const endPoint = 'https://striveschool-api.herokuapp.com/api/movies/'
+
+        // title 
+        const formTitle = document.querySelector('#form-title')
+
+        // inputs 
+        const movieNameInput = document.querySelector('#movieName')
+        const moveiDescriptionInput = document.querySelector('#movieDescription')
+        const movieCategoryInput = document.querySelector('#movieCategory')
+        const movieImageInput = document.querySelector('#movieImageUrl')
+
+        // buttons
+
+        const submitBtn = document.querySelector('#submitBtn')
+        const editBtn = document.querySelector('#editBtn')
+        const deleteBtn = document.querySelector('#deleteBtn')
+
+         
+        // get id and category from search
+        const params = new URLSearchParams(window.location.search)
+        const id = params.get('id')
+        const category = params.get('category')
+
+        
+        // functions
+
+        const fetchById = async (category) => {
+
+            if(id) {
+
+                document.getElementById('form').classList.add('d-none')
+                document.querySelector('.spinner').classList.remove('d-none')
+                document.querySelector('.spinner').classList.add('d-flex')
+
+            const response = await fetch(endPoint + category, {
+                headers: {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI4YWU0NDRlYTdiMTAwMTVkMDY3YTciLCJpYXQiOjE2NDY5OTkxMjksImV4cCI6MTY0ODIwODcyOX0.tZj15jkzkbn1IZkqDEEDvSVVYOVuwfWunseLMjfR3hw"
+                }})
+            
+            const data = await response.json()
+
+            const selectedMovie = data.find(element => element._id == id)
+            console.log(selectedMovie, 'result')
+            
+            movieNameInput.value = selectedMovie['name']
+            moveiDescriptionInput.value = selectedMovie['description']
+            movieCategoryInput.value = selectedMovie['category']
+            movieImageInput.value = selectedMovie['imageUrl']
+            
+
+
+
+                if(selectedMovie) {
+                    document.getElementById('form').classList.remove('d-none')
+                    document.querySelector('.spinner').classList.add('d-none')
+                }
+            }
+        } 
+
+
+        window.onload = async () => {
+
+            if(id) {
+
+                submitBtn.innerText = 'Edit movie'
+                deleteBtn.classList.remove('d-none')
+                formTitle.innerHTML = 'Update your movie'
+
+                fetchById(category)
+
+                
+
+
+
+            }
+        }   
+
+        const handleSubmit = async (event) => {
+            event.preventDefault()
+
+            try {
+                const objBody = {
+                    name: movieNameInput.value,
+                    description: moveiDescriptionInput.value,
+                    category: movieCategoryInput.value,
+                    imageUrl: movieImageInput.value
+                }
+    
+                const body = JSON.stringify(objBody)
+                console.log(body)
+
+                const method = id ? 'PUT' : 'POST'
+                const endPoint = id ? `https://striveschool-api.herokuapp.com/api/movies/${id}` : 'https://striveschool-api.herokuapp.com/api/movies/'
+
+                const response = await fetch(endPoint, {
+                    headers: {
+                        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI4YWU0NDRlYTdiMTAwMTVkMDY3YTciLCJpYXQiOjE2NDY5OTkxMjksImV4cCI6MTY0ODIwODcyOX0.tZj15jkzkbn1IZkqDEEDvSVVYOVuwfWunseLMjfR3hw",
+                        'Content-type': 'application/json',
+                    },
+                    method: method,
+                    body: body,
+                    
+                })
+
+                window.location.assign('./NetflixHome.html')
+          
+            } catch (error) {
+                console.log('We have an error', error)
+            }
+        } 
+
+        
+        const handleDelete = async (event) => {
+            event.preventDefault()
+
+            const response = await fetch(endPoint + id, {
+                headers: {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI4YWU0NDRlYTdiMTAwMTVkMDY3YTciLCJpYXQiOjE2NDY5OTkxMjksImV4cCI6MTY0ODIwODcyOX0.tZj15jkzkbn1IZkqDEEDvSVVYOVuwfWunseLMjfR3hw"
+                },
+                method: 'DELETE'
+            })
+            window.location.assign('./netflixHome.html')
+        }
+
+
+    </script>
+    </body>
+</html>
