@@ -1,0 +1,49 @@
+hr {
+  border-color: rgb(209, 206, 206);
+  border-width: 2px;
+}
+#cancelButton {
+  background-color: rgb(228, 225, 225);
+  color: rgb(219, 216, 216);
+  width: 200px;
+
+  border-color: rgb(228, 225, 225);
+  border-radius: 0;
+}
+p {
+  margin: 10px;
+}
+
+.grey {
+  color: grey;
+}
+
+.linkSettings {
+  margin-right: -45px;
+}
+
+.break2 {
+  width: 69%;
+}
+
+.break3 {
+  width: 101.8%;
+}
+.break4 {
+  width: 98%;
+  margin-left: 23px;
+}
+
+#ultraHD {
+  height: 18px;
+  border-style: solid;
+  border-color: rgb(128, 128, 128);
+  border-width: 1px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-right-width: 2px;
+}
+
+#profileImg {
+  height: 50px;
+}
