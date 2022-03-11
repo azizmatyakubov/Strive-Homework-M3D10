@@ -11,6 +11,7 @@
     <title>BackOffice</title>
   </head>
   <body>
+    <!-- Bootstrap Navbar   -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Navbar</a>
@@ -37,7 +38,7 @@
 
     <div class="container d-flex justify-content-center">
         <div class="input-wrapper w-50">
-
+            
             <h1 id="form-title" class="text-center mb-5">Enter new movie's details</h1>
 
         <form id="form"  onsubmit="handleSubmit(event)">
@@ -103,30 +104,34 @@
 
         const fetchById = async (category) => {
 
+            // if we have search param with id, we will display spinner and remove form
             if(id) {
 
                 document.getElementById('form').classList.add('d-none')
                 document.querySelector('.spinner').classList.remove('d-none')
                 document.querySelector('.spinner').classList.add('d-flex')
 
-            const response = await fetch(endPoint + category, {
-                headers: {
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI4YWU0NDRlYTdiMTAwMTVkMDY3YTciLCJpYXQiOjE2NDY5OTkxMjksImV4cCI6MTY0ODIwODcyOX0.tZj15jkzkbn1IZkqDEEDvSVVYOVuwfWunseLMjfR3hw"
-                }})
+                // Get data 
+                const response = await fetch(endPoint + category, {
+                    headers: {
+                        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI4YWU0NDRlYTdiMTAwMTVkMDY3YTciLCJpYXQiOjE2NDY5OTkxMjksImV4cCI6MTY0ODIwODcyOX0.tZj15jkzkbn1IZkqDEEDvSVVYOVuwfWunseLMjfR3hw"
+                    }})
             
-            const data = await response.json()
+                const data = await response.json()
+                
+                // data returns array of selected category, we will find selected movies by ID 
+                const selectedMovie = data.find(element => element._id == id)
+                console.log(selectedMovie, 'result')
+                
+                // Displaying movie's details 
+                movieNameInput.value = selectedMovie['name']
+                moveiDescriptionInput.value = selectedMovie['description']
+                movieCategoryInput.value = selectedMovie['category']
+                movieImageInput.value = selectedMovie['imageUrl']
+                
 
-            const selectedMovie = data.find(element => element._id == id)
-            console.log(selectedMovie, 'result')
-            
-            movieNameInput.value = selectedMovie['name']
-            moveiDescriptionInput.value = selectedMovie['description']
-            movieCategoryInput.value = selectedMovie['category']
-            movieImageInput.value = selectedMovie['imageUrl']
-            
 
-
-
+                // If we have movie's details, we will remove spinner and display form
                 if(selectedMovie) {
                     document.getElementById('form').classList.remove('d-none')
                     document.querySelector('.spinner').classList.add('d-none')
@@ -136,26 +141,25 @@
 
 
         window.onload = async () => {
-
+            // If we have id, changing inner text of submit button and form title 
             if(id) {
 
                 submitBtn.innerText = 'Edit movie'
                 deleteBtn.classList.remove('d-none')
                 formTitle.innerHTML = 'Update your movie'
 
+                // This is the function that get movie from API 
                 fetchById(category)
-
-                
-
-
 
             }
         }   
 
+        // when submit (on form) function clicked, this will run 
         const handleSubmit = async (event) => {
             event.preventDefault()
 
             try {
+                // object body 
                 const objBody = {
                     name: movieNameInput.value,
                     description: moveiDescriptionInput.value,
@@ -166,6 +170,7 @@
                 const body = JSON.stringify(objBody)
                 console.log(body)
 
+                // if we have id, we will update. Otherwise we will create
                 const method = id ? 'PUT' : 'POST'
                 const endPoint = id ? `https://striveschool-api.herokuapp.com/api/movies/${id}` : 'https://striveschool-api.herokuapp.com/api/movies/'
 
@@ -179,6 +184,7 @@
                     
                 })
 
+                // After operation, we will go to home page 
                 window.location.assign('./NetflixHome.html')
           
             } catch (error) {
@@ -186,7 +192,7 @@
             }
         } 
 
-        
+        // Delete selected movie
         const handleDelete = async (event) => {
             event.preventDefault()
 
